@@ -29,7 +29,7 @@ Rails.application.configure do
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = true
   config.action_mailer.delivery_method = :test
-  host = 'rails-tutorial-mhartl.c9users.io'     # クラウドIDE
+  host = '7cd49fc76deb4663b8091fef5e8bbdc4.vfs.cloud9.us-west-2.amazonaws.com'     # クラウドIDE
   config.action_mailer.default_url_options = { host: host, protocol: 'https' }
 
   config.action_mailer.perform_caching = false

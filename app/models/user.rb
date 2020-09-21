@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  #マイクロポストはその所有者（ユーザー）と一緒に破棄される(has_many)
+  has_many :microposts, dependent: :destroy
   attr_accessor :remember_token, :activation_token, :reset_token
   before_save   :downcase_email
   before_create :create_activation_digest
@@ -42,13 +44,13 @@ class User < ApplicationRecord
   end
   
   #Userモデルにユーザー有効化メソッドを追加する
-  #アカウントを有効にする
-  def activated
+ # アカウントを有効にする
+  def activate
     update_attribute(:activated,    true)
-    update_attribute(:actibated_at, Time.zone.now)
+    update_attribute(:activated_at, Time.zone.now)
   end
-  
-  #有効化用のメールを送信する
+
+  # 有効化用のメールを送信する
   def send_activation_email
     UserMailer.account_activation(self).deliver_now
   end
@@ -56,7 +58,7 @@ class User < ApplicationRecord
   #パスワード再設定の属性を設定する
   def create_reset_digest
     self.reset_token = User.new_token
-    update_attribute(:reset_digest, User.digest(reset_token))
+    update_attribute(:reset_digest,  User.digest(reset_token))
     update_attribute(:reset_sent_at, Time.zone.now)
   end
   
@@ -65,10 +67,15 @@ class User < ApplicationRecord
     UserMailer.password_reset(self).deliver_now
   end
   
-  #パスワード再設定の期限が切れている場合はtrueを返す
-  #[<]はより速い時刻を意味する
+  # パスワード再設定の期限が切れている場合はtrueを返す
   def password_reset_expired?
     reset_sent_at < 2.hours.ago
+  end
+  
+  #試作feedの定義
+  #完全な実装は事象の「ユーザーをフォローする」を参照
+  def feed
+    Micropost.where("user_id = ?", id)
   end
   
   private

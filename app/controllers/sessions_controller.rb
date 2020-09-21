@@ -6,15 +6,12 @@ class SessionsController < ApplicationController
   def create
     user = User.find_by(email: params[:session][:email].downcase)
     if user && user.authenticate(params[:session][:password])
-      #有効でないユーザーがログインすることのないようにする
       if user.activated?
         log_in user
-        #[remember me]チェックボックスの送信結果を処理する
         params[:session][:remember_me] == '1' ? remember(user) : forget(user)
-        #フレンドリーフォワーディングを備えたcreateアクション
         redirect_back_or user
       else
-        message = "Account not activated."
+        message  = "Account not activated. "
         message += "Check your email for the activation link."
         flash[:warning] = message
         redirect_to root_url
